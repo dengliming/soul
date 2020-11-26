@@ -17,14 +17,14 @@
 
 package org.dromara.soul.admin.vo;
 
-import java.io.Serializable;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.dromara.soul.admin.entity.PluginHandleDO;
+import org.dromara.soul.common.utils.DateUtils;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * this is plugin handle view to web front.
@@ -85,13 +85,12 @@ public class PluginHandleVO implements Serializable {
      * @return {@linkplain PluginHandleVO}
      */
     public static PluginHandleVO buildPluginHandleVO(final PluginHandleDO pluginHandleDO, final List<SoulDictVO> dictOptions) {
-        if (Objects.isNull(pluginHandleDO)) {
-            return null;
-        }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return new PluginHandleVO(pluginHandleDO.getId(), pluginHandleDO.getPluginId(),
-                pluginHandleDO.getField(), pluginHandleDO.getLabel(),
-                String.valueOf(pluginHandleDO.getDataType()), dateTimeFormatter.format(pluginHandleDO.getDateCreated().toLocalDateTime()),
-                dateTimeFormatter.format(pluginHandleDO.getDateUpdated().toLocalDateTime()), dictOptions);
+        return Optional.ofNullable(pluginHandleDO)
+                .map(it -> new PluginHandleVO(pluginHandleDO.getId(), pluginHandleDO.getPluginId(),
+                        pluginHandleDO.getField(), pluginHandleDO.getLabel(),
+                        String.valueOf(pluginHandleDO.getDataType()),
+                        DateUtils.localDateTimeToString(pluginHandleDO.getDateCreated().toLocalDateTime()),
+                        DateUtils.localDateTimeToString(pluginHandleDO.getDateUpdated().toLocalDateTime()), dictOptions))
+                .orElse(null);
     }
 }
